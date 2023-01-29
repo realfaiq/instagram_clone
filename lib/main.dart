@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/providers/user_Provider.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:provider/provider.dart';
 import './resopnsive/responsiveLayoutScreen.dart';
 import './resopnsive/mobileScreenLayout.dart';
 import './resopnsive/webScreenLayout.dart';
@@ -29,16 +32,39 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Instagram Clone',
-      theme: ThemeData.dark()
-          .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
-      // home: ResponsiveLayoutScreen(
-      //   mobileScreenLayout: MobileScreenLayout(),
-      //   webScreenLayout: WebScreenLayout(),
-      // ),
-      home: SignUpScreen(),
-    );
+    return MultiProvider(
+        providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Instagram Clone',
+          theme: ThemeData.dark()
+              .copyWith(scaffoldBackgroundColor: mobileBackgroundColor),
+          // home: LogInScreen(),
+          //Persisting the User State
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: ((context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  return const ResponsiveLayoutScreen(
+                    mobileScreenLayout: MobileScreenLayout(),
+                    webScreenLayout: WebScreenLayout(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('${snapshot.error}'),
+                  );
+                }
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: primaryColor),
+                );
+              }
+              //Bcz Snapshot has not any data means the User is not Authenticated
+              return const LogInScreen();
+            }),
+          ),
+        ));
   }
 }

@@ -4,6 +4,10 @@ import 'package:instagram_clone/utils/colors.dart';
 import '../widgets/text_Field_Input.dart';
 import '../resources/auth_methods.dart';
 import '../utils/utils.dart';
+import './signup_Screen.dart';
+import '../resopnsive/mobileScreenLayout.dart';
+import '../resopnsive/responsiveLayoutScreen.dart';
+import '../resopnsive/webScreenLayout.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -33,13 +37,22 @@ class _LogInScreenState extends State<LogInScreen> {
         email: _emailController.text, password: _passwordController.text);
 
     if (res == 'Success') {
-      //Login
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const ResponsiveLayoutScreen(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              )));
     } else {
       showSnackBar(res, context);
     }
     setState(() {
       _isloading = false;
     });
+  }
+
+  void navigateToSignUp() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const SignUpScreen()));
   }
 
   @override
@@ -120,7 +133,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: navigateToSignUp,
                   child: Container(
                     child: const Text(
                       'Sign Up',
