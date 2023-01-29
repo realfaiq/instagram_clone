@@ -9,7 +9,6 @@ import './resopnsive/responsiveLayoutScreen.dart';
 import './resopnsive/mobileScreenLayout.dart';
 import './resopnsive/webScreenLayout.dart';
 import './screens/login_Screen.dart';
-import './screens/signup_Screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
