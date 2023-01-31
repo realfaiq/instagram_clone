@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:instagram_clone/models/comment_Model.dart';
 import 'package:instagram_clone/models/post_Model.dart';
 import 'package:instagram_clone/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
@@ -53,6 +54,45 @@ class fireStoreMethods {
           'likes': FieldValue.arrayUnion([uid]),
         });
       }
+    } catch (err) {
+      print(err.toString());
+    }
+  }
+
+  //Post Comments
+  Future<void> postComments(String postId, String text, String uid, String name,
+      String profilePic) async {
+    try {
+      String commentId = const Uuid().v1();
+      if (text.isNotEmpty) {
+        Comment comment = Comment(
+          profilePic: profilePic,
+          name: name,
+          uid: uid,
+          text: text,
+          commentId: commentId,
+          datePublished: DateTime.now(),
+        );
+        await _firestore
+            .collection('posts')
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .set(
+              comment.toJSON(),
+            );
+      } else {
+        print('Text is Empty');
+      }
+    } catch (err) {
+      print(err.toString());
+    }
+  }
+
+  //Deleting the Post
+  Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
     } catch (err) {
       print(err.toString());
     }
